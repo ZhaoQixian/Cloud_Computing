@@ -3,20 +3,43 @@
 This document presents a numerical analysis comparing PageRank, HITS (Hyperlink-Induced Topic Search), and two variations of HITS: Randomised-HITS and Subspace-HITS. The analysis is performed on a dataset of Singapore attractions from TripAdvisor.
 
 ## Table of Contents
-1. [Introduction](#introduction)
-2. [Small Graph Example](#small-graph-example)
-3. [Singapore TripAdvisor Dataset](#singapore-tripadvisor-dataset)
-4. [Algorithm Implementations](#algorithm-implementations)
+1. [Setup and Dependencies](#setup-and-dependencies)
+2. [Introduction](#introduction)
+3. [Small Graph Example](#small-graph-example)
+4. [Singapore TripAdvisor Dataset](#singapore-tripadvisor-dataset)
+5. [Algorithm Implementations](#algorithm-implementations)
    - [PageRank](#pagerank)
    - [HITS](#hits)
    - [Randomised-HITS](#randomised-hits)
    - [Subspace-HITS](#subspace-hits)
-5. [Comparative Analysis](#comparative-analysis)
+6. [Comparative Analysis](#comparative-analysis)
    - [Performance Metrics](#performance-metrics)
    - [Correlation Analysis](#correlation-analysis)
    - [Score Distributions](#score-distributions)
-6. [Top Attractions by Algorithm](#top-attractions-by-algorithm)
-7. [Conclusion](#conclusion)
+7. [Top Attractions by Algorithm](#top-attractions-by-algorithm)
+8. [Conclusion](#conclusion)
+9. [Appendix: Node Embeddings and Personalized PageRank](#appendix-node-embeddings-and-personalized-pagerank)
+
+## Setup and Dependencies
+
+Before running the analysis, we need to install and import the necessary libraries:
+
+```python
+# Install required packages
+pip install --upgrade openai
+
+# Import all required libraries
+import networkx as nx
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import time
+from collections import OrderedDict
+from scipy.stats import spearmanr
+import os
+import pickle
+import openai
+```
 
 ## Introduction
 
@@ -27,8 +50,7 @@ Link analysis algorithms like PageRank and HITS are fundamental to web search an
 We begin with a small directed graph of Singapore attractions to illustrate the basic concepts:
 
 ```python
-import networkx as nx
-
+# Create a small example graph
 G_small = nx.DiGraph()
 G_small.add_edges_from([
     ("Marina Bay Sands", "Gardens by the Bay"),
@@ -39,9 +61,11 @@ G_small.add_edges_from([
     ("Marina Bay Sands", "Sentosa"),
 ])
 
+# Calculate PageRank and HITS scores
 pagerank_small = nx.pagerank(G_small, alpha=0.85)
 hubs_small, auth_small = nx.hits(G_small)
 
+# Display results
 print("Small Graph PageRank Scores:\n", pagerank_small)
 print("Small Graph Hub Scores:\n", hubs_small)
 print("Small Graph Authority Scores:\n", auth_small)
@@ -54,8 +78,7 @@ This example demonstrates how PageRank assigns importance based on the link stru
 The main analysis uses a dataset of TripAdvisor reviews for Singapore attractions:
 
 ```python
-import pandas as pd, networkx as nx
-
+# Load and preprocess the dataset
 wb = "SIN_TripAdvisor.xlsx"
 reviews = pd.read_excel(
     wb,
@@ -64,6 +87,7 @@ reviews = pd.read_excel(
     dtype={"Name": "string"}
 )
 
+# Rename columns for clarity
 reviews = reviews.rename(
     columns={
         "Date": "review_date",
@@ -72,17 +96,18 @@ reviews = reviews.rename(
     }
 )
 
-# keep users who reviewed >1 attraction
+# Keep users who reviewed >1 attraction
 freq = reviews["user_id"].value_counts()
 reviews = reviews[reviews["user_id"].isin(freq[freq > 1].index)]
 
-# build weighted directed edges
+# Build weighted directed edges
 edges = {}
 for uid, grp in reviews.sort_values("review_date").groupby("user_id"):
     seq = grp["attraction"].tolist()
     for a, b in zip(seq, seq[1:]):
         edges[(a, b)] = edges.get((a, b), 0) + 1
 
+# Create the graph
 G_sg = nx.DiGraph()
 G_sg.add_weighted_edges_from([(u, v, w) for (u, v), w in edges.items()])
 print(nx.number_of_nodes(G_sg), "nodes", nx.number_of_edges(G_sg), "edges")
@@ -182,9 +207,7 @@ This approach can improve convergence and stability by focusing on the most sign
 All four algorithms were run on the Singapore attractions graph:
 
 ```python
-from collections import OrderedDict
-import time
-
+# Initialize results container
 results = OrderedDict()
 
 # PageRank
@@ -216,7 +239,7 @@ For each algorithm, we recorded:
 - Top-5 attractions by score
 
 ```python
-# pretty print top‑5 for each
+# Display top-5 attractions for each algorithm
 for name, dat in results.items():
     top5 = sorted(dat["scores"].items(), key=lambda x: x[1], reverse=True)[:5]
     print(f"{name} (time {dat['runtime']:.3f}s, iters {dat['iters']}):")
@@ -229,8 +252,7 @@ for name, dat in results.items():
 We computed Spearman rank correlations between the scores from different algorithms:
 
 ```python
-from scipy.stats import spearmanr
-
+# Calculate correlation matrix
 algo_names = list(results)
 cor_mat = pd.DataFrame(index=algo_names, columns=algo_names, dtype=float)
 
@@ -253,9 +275,7 @@ This analysis reveals how similar the rankings produced by different algorithms 
 We visualized the score distributions for all algorithms on log-log plots:
 
 ```python
-import matplotlib.pyplot as plt
-
-# Plot score distributions for all algorithms
+# Plot score distributions
 plt.figure(figsize=(15, 10))
 
 for i, (algo, res) in enumerate(results.items(), 1):
@@ -278,8 +298,7 @@ These plots help visualize how quickly the scores decay as rank increases, revea
 Finally, we visualized the top-10 attractions according to each algorithm:
 
 ```python
-import matplotlib.pyplot as plt
-
+# Visualize top-10 attractions for each algorithm
 for name, data in results.items():
     top = sorted(data["scores"].items(), key=lambda x: x[1], reverse=True)[:10]
     labels, vals = zip(*top)
@@ -304,3 +323,148 @@ This analysis demonstrates the similarities and differences between PageRank, HI
 The correlation analysis shows which algorithms produce similar rankings, while the score distributions reveal the power-law nature of importance in the attraction network. The top attractions identified by each algorithm provide practical insights for tourism recommendations.
 
 This comparative study helps understand the strengths and characteristics of different link analysis algorithms, which can inform their application in recommendation systems, search engines, and other network analysis tasks.
+
+## Appendix: Node Embeddings and Personalized PageRank
+
+The following code demonstrates how to use node embeddings with OpenAI's API to create personalized PageRank scores based on user queries:
+
+```python
+# Configuration
+API_KEY = "your-api-key-here"  # Replace with your actual OpenAI API key
+EMBED_MODEL = "text-embedding-ada-002"
+EMBED_CACHE = "node_embeddings.pkl"
+TRIP_FILE = "SIN_TripAdvisor.xlsx"
+SHEET_NAME = "SIN_TripAdvisor1"
+
+openai.api_key = API_KEY
+
+# Helper function to get embeddings
+def get_embedding(text: str) -> np.ndarray:
+    resp = openai.embeddings.create(
+        model=EMBED_MODEL,
+        input=[text]
+    )
+    return np.array(resp.data[0].embedding)
+
+# Load or initialize embedding cache
+if os.path.exists(EMBED_CACHE):
+    with open(EMBED_CACHE, "rb") as f:
+        node_embeddings = pickle.load(f)
+else:
+    node_embeddings = {}
+
+# Build the graph (similar to earlier code)
+# ...
+
+# Make a working copy of the graph
+G = G_sg.copy()
+
+# Embed any new nodes and cache them
+missing = [n for n in G.nodes if n not in node_embeddings]
+if missing:
+    resp = openai.embeddings.create(model=EMBED_MODEL, input=missing)
+    for node, item in zip(missing, resp.data):
+        node_embeddings[node] = np.array(item.embedding)
+    with open(EMBED_CACHE, "wb") as f:
+        pickle.dump(node_embeddings, f)
+
+# Compute original PageRank
+pr_orig = nx.pagerank(G, alpha=0.85, weight="weight")
+
+# Display basic statistics
+print(f"Graph: {G.number_of_nodes()} nodes, {G.number_of_edges()} edges")
+print(f"Embeddings cached: {len(node_embeddings)} entries")
+
+# Show top 5 attractions
+top5 = sorted(pr_orig.items(), key=lambda x: x[1], reverse=True)[:5]
+print("Top 5 attractions by original PageRank:")
+for i, (place, score) in enumerate(top5, start=1):
+    print(f"  {i}. {place} ({score:.4f})")
+
+# PageRank distribution stats
+scores = np.array(list(pr_orig.values()))
+print(f"PR score — min: {scores.min():.6f}, max: {scores.max():.6f}, "
+      f"mean: {scores.mean():.6f}, std: {scores.std():.6f}")
+
+# Function to describe places based on queries
+def describe_place(place: str, query: str) -> str:
+    """Get a description of a place based on a query"""
+    try:
+        resp = openai.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": (
+                    "You are a succinct assistant that, given a user's travel query "
+                    "and a place name, returns exactly one sentence explaining why "
+                    "that place would satisfy the query."
+                )},
+                {"role": "user", "content": (
+                    f"User query: \"{query}\"\n"
+                    f"Place: \"{place}\"\n"
+                    "Write one concise sentence explaining why this place fits the query."
+                )}
+            ]
+        )
+        return resp.choices[0].message.content.strip()
+    except Exception as e:
+        print(f"Error in describe_place: {e}")
+        return f"{place} is a great destination that matches your interest in {query}."
+
+# Function to run personalized PageRank based on a query
+def run_query(query: str):
+    # Build personalization vector based on query embedding
+    q_emb = get_embedding(query)
+    sims = {n: float(np.dot(q_emb, emb)/ (np.linalg.norm(q_emb)*np.linalg.norm(emb))) 
+            for n, emb in node_embeddings.items()}
+    
+    # Normalize similarities to create personalization vector
+    mn = min(sims.values())
+    for n in sims:
+        sims[n] -= mn
+    total = sum(sims.values()) or 1.0
+    p = {n: sims[n]/total for n in sims}
+    
+    # Compute personalized PageRank
+    pr_pers = nx.pagerank(G, alpha=0.85, weight="weight", personalization=p)
+    
+    # Get top-10 by original score
+    stats = [(n, pr_orig[n], pr_pers[n], pr_pers[n]-pr_orig[n]) for n in G.nodes]
+    top10 = sorted(stats, key=lambda x: x[1], reverse=True)[:10]
+    
+    # Plot comparison
+    names, origs, pers = zip(*[(t[0], t[1], t[2]) for t in top10])
+    x = np.arange(len(names))
+    w = 0.35
+    fig, ax = plt.subplots()
+    ax.bar(x-w/2, origs, w, label="Original")
+    ax.bar(x+w/2, pers, w, label="Personalized")
+    ax.set_xticks(x)
+    ax.set_xticklabels(names, rotation=45, ha="right")
+    ax.legend()
+    plt.tight_layout()
+    plt.show()
+    
+    # Print detailed results with descriptions
+    print(f"{'O#':>3} {'P#':>3} {'Place':<30} {'Orig':>8} "
+          f"{'Pers':>8} {'ΔScore':>8} {'ΔRank':>7} {'%ΔScore':>8}")
+    
+    orig_order = sorted(pr_orig, key=pr_orig.get, reverse=True)
+    pers_order = sorted(pr_pers, key=pr_pers.get, reverse=True)
+    orig_rank = {n: i+1 for i, n in enumerate(orig_order)}
+    pers_rank = {n: i+1 for i, n in enumerate(pers_order)}
+    
+    for node, o_score, p_score, d_score in top10:
+        o_r, p_r = orig_rank[node], pers_rank[node]
+        d_rank = o_r - p_r
+        pct = (d_score/o_score*100) if o_score else 0.0
+        desc = describe_place(node, query)
+        print(f"{o_r:3d} {p_r:3d} {node:<30} "
+              f"{o_score:8.4f} {p_score:8.4f} "
+              f"{d_score:8.4f} {d_rank:7d} {pct:8.1f}%\n"
+              f" ↳ {desc}\n")
+
+# Example query
+run_query("I want a place to date near NTU.")
+```
+
+This extension demonstrates how embeddings can be used to personalize PageRank scores based on natural language queries, providing context-aware recommendations.
