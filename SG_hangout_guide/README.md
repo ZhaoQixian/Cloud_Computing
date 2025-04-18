@@ -1,5 +1,7 @@
 # SG Hangout Guide
 
+![Website Image](./Website_Image.png)
+
 SG Hangout Guide is a web application that helps users find the perfect hangout spots in Singapore based on natural language queries. It leverages the OneMap API for location data and OpenAI's GPT models to parse user queries, generate suggestions, check grammar, and rank recommended venues.
 
 ## Features
@@ -125,18 +127,28 @@ This project is licensed under the MIT License.
 - Check console logs for detailed error messages
 - Verify network connectivity to OneMap and OpenAI APIs
 
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
 ## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
-## Contact
+## Deployed Application and Documentation
 
-Project Link: [Your Project Repository URL]
+- The SG Hangout Guide web application is deployed and accessible at: [https://singapore-hangout-guide.onrender.com](https://singapore-hangout-guide.onrender.com)
+
+- Additional documentation files included in this repository:
+  - Report: `SG_hangout_guide.pdf`
+  - Presentation: `SG_hangout_guide.pptx`
+
+## Highlights from the Report and Presentation
+
+The SG Hangout Guide is an interactive web platform that transforms casual, free-form queries into precise, location-based recommendations across Singapore. Key highlights include:
+
+- Advanced natural language processing powered by OpenAI’s GPT-4.1-mini for real-time grammar corrections and AI-aided suggestions.
+- Seamless integration of geospatial data via Singapore’s OneMap API, providing up-to-date venue information.
+- Cloud-native architecture combining containerized microservices with serverless components and managed cloud databases for scalability and high availability.
+- User-friendly React-based frontend with intelligent query parsing and real-time suggestions.
+- Efficient backend handling with a single unified API call for grammar checking, NLP parsing, venue search, and ranking, keeping costs low.
+- Robust fault-tolerant design managing API rate limits, caching, and error handling to ensure consistent performance.
+- Future-ready design supporting extensibility and potential applications in conversational data access and generative search engines.
+
+For more detailed information, please refer to the full report (`SG_hangout_guide.pdf`) and presentation (`SG_hangout_guide.pptx`) included in this repository.
