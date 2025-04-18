@@ -31,7 +31,7 @@ const Results = ({ results, isLoading, error }) => {
     return null;
   }
   
-  // Render results
+  // Render results with fade-in animation
   return (
     <div className="results-container">
       <div className="results-summary">
@@ -39,12 +39,28 @@ const Results = ({ results, isLoading, error }) => {
       </div>
       
       {results.map((result, index) => (
-        <div key={`result-${index}`} className="result-card">
-          <div className="result-name">{result.name}</div>
-          <div className="result-description">{result.description}</div>
-          <div className="result-address">{result.address}</div>
-          <div className="result-coordinates">
-            Coordinates: {result.latitude}, {result.longitude}
+        <div key={`result-${index}`} className="result-card fade-in">
+          <div>
+            <div className="result-name">{result.name}</div>
+            
+            <div className="result-address">{result.address}</div>
+            
+            {/* Display additional details if available */}
+            {result.details && (
+              <div className="result-details">
+                {result.details.postalCode !== 'N/A' && (
+                  <div className="detail-item">
+                    <span className="detail-label">Postal Code:</span> {result.details.postalCode}
+                  </div>
+                )}
+              </div>
+            )}
+            
+            <div className="result-coordinates">
+              Coordinates: {result.coordinates ? 
+                `${result.coordinates.latitude}, ${result.coordinates.longitude}` : 
+                `${result.latitude}, ${result.longitude}`}
+            </div>
           </div>
         </div>
       ))}

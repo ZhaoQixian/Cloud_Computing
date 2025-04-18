@@ -7,16 +7,30 @@
 .App-header {
   margin-bottom: 2rem;
   text-align: center;
+  font-family: 'Patrick Hand', cursive;
+  color: #8b5e3c;
+  text-shadow: 1px 1px 0 #f5deb3;
+  border-bottom: 2px solid #d2b48c;
+  padding-bottom: 0.5rem;
+  user-select: none;
 }
 
 .App-header h1 {
-  color: #2c3e50;
+  color: #8b5e3c;
   margin-bottom: 0.5rem;
+  font-size: 3rem;
+  font-weight: normal;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 0 #f5deb3;
 }
 
 .App-header p {
-  color: #7f8c8d;
+  color: #a1866f;
   margin-bottom: 0;
+  font-size: 1.2rem;
+  font-style: italic;
+  text-shadow: 1px 1px 0 #f5deb3;
 }
 
 .chat-container {
@@ -24,6 +38,173 @@
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  font-family: 'Patrick Hand', cursive;
+  background: repeating-linear-gradient(
+    to bottom,
+    #fff,
+    #fff 24px,
+    #f0e6d2 25px,
+    #fff 26px
+  );
+  padding: 1rem;
+  position: relative;
+  min-height: 300px;
+}
+
+.input-container {
+  display: flex;
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+}
+
+.user-input {
+  flex: 1;
+  padding: 0.8rem;
+  border: none;
+  border-bottom: 2px solid #b5651d;
+  font-size: 1.2rem;
+  font-family: 'Patrick Hand', cursive;
+  background: transparent;
+  outline: none;
+  color: #5b4636;
+  transition: border-color 0.3s ease;
+}
+
+.user-input::placeholder {
+  font-style: italic;
+  color: #a1866f;
+}
+
+.user-input:focus {
+  border-color: #d2691e;
+}
+
+.send-button {
+  margin-left: 0.5rem;
+  padding: 0.8rem 1.5rem;
+  background-color: #d2691e;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s;
+  box-shadow: 2px 2px 5px rgba(210, 105, 30, 0.5);
+}
+
+.send-button:hover {
+  background-color: #b35417;
+}
+
+.send-button:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Parsed criteria as clickable checkpoints */
+.parsed-criteria {
+  margin: 1rem 0;
+  padding: 1rem;
+  background-color: #fef9e7;
+  border-radius: 12px;
+  border: 2px dashed #d2b48c;
+  box-shadow: inset 0 0 10px #f5deb3;
+}
+
+.parsed-criteria h3 {
+  margin-top: 0;
+  margin-bottom: 0.8rem;
+  font-size: 1.2rem;
+  color: #8b5e3c;
+  font-family: 'Patrick Hand', cursive;
+}
+
+.criteria-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.criteria-item {
+  background-color: #fff8dc;
+  border: 2px solid #deb887;
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-family: 'Patrick Hand', cursive;
+  font-size: 1rem;
+  color: #8b5e3c;
+  box-shadow: 2px 2px 5px rgba(222, 184, 135, 0.6);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  user-select: none;
+}
+
+.criteria-item:hover {
+  background-color: #f5deb3;
+  transform: scale(1.05);
+}
+
+/* Sticky note style for result cards */
+.result-card {
+  background-color: #fffacd;
+  border: 1px solid #f0e68c;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 5px 5px 10px rgba(189, 183, 107, 0.7);
+  transform: rotate(-2deg);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  font-family: 'Patrick Hand', cursive;
+  color: #5b4636;
+  position: relative;
+}
+
+.result-card:hover {
+  transform: rotate(0deg) translateY(-5px);
+  box-shadow: 8px 8px 15px rgba(189, 183, 107, 0.9);
+}
+
+.result-name {
+  font-weight: bold;
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+  color: #8b5e3c;
+}
+
+.result-address {
+  font-size: 1rem;
+  color: #a1866f;
+  margin-bottom: 0.5rem;
+}
+
+.result-coordinates {
+  font-size: 0.8rem;
+  color: #bdb76b;
+}
+
+/* Add a small sticky note "tape" effect */
+.result-card::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  left: 20px;
+  width: 40px;
+  height: 10px;
+  background: repeating-linear-gradient(
+    45deg,
+    #deb887,
+    #deb887 5px,
+    #f5deb3 5px,
+    #f5deb3 10px
+  );
+  border-radius: 2px;
+  box-shadow: 1px 1px 2px rgba(139, 94, 60, 0.5);
+  transform: rotate(-10deg);
+  z-index: 10;
 }
 
 .input-container {
@@ -71,21 +252,128 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  animation: fadeIn 0.5s ease-in-out;
 }
 
 .suggestion-button {
-  background-color: #f0f0f0;
-  border: 1px solid #ddd;
-  border-radius: 20px;
-  padding: 0.5rem 1rem;
-  font-size: 0.9rem;
+  background-color: #fff8dc;
+  border: 2px solid #deb887;
+  border-radius: 30px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
   cursor: pointer;
-  transition: all 0.2s;
+  font-family: 'Patrick Hand', cursive;
+  color: #8b5e3c;
+  box-shadow: 2px 2px 5px rgba(222, 184, 135, 0.6);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  user-select: none;
+  animation: popIn 0.3s ease forwards;
+}
+
+.suggestion-button.clicked {
+  animation: clickPop 0.3s ease forwards;
 }
 
 .suggestion-button:hover {
-  background-color: #e0e0e0;
-  border-color: #ccc;
+  background-color: #f5deb3;
+  border-color: #d2b48c;
+  transform: scale(1.1);
+}
+
+/* Animation for suggestion click */
+@keyframes clickPop {
+  0% {
+    transform: scale(1);
+    background-color: #fff8dc;
+  }
+  50% {
+    transform: scale(1.2);
+    background-color: #f5deb3;
+  }
+  100% {
+    transform: scale(1);
+    background-color: #fff8dc;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Fade-in animation for result cards */
+.fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+/* Grammar correction styles */
+.grammar-correction {
+  margin: 0.5rem 1rem;
+  padding: 0.8rem;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.grammar-correction p {
+  margin: 0;
+  color: #495057;
+}
+
+.correction-text {
+  font-weight: bold;
+  color: #3498db;
+}
+
+.correction-button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+  margin-left: 1rem;
+}
+
+.correction-button:hover {
+  background-color: #2980b9;
+}
+
+@media (max-width: 600px) {
+  .grammar-correction {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .correction-button {
+    margin-left: 0;
+    margin-top: 0.5rem;
+    width: 100%;
+  }
 }
 
 .results-container {
@@ -126,6 +414,108 @@
 .result-coordinates {
   font-size: 0.8rem;
   color: #bdc3c7;
+}
+
+.result-features {
+  margin: 0.8rem 0;
+  padding: 0.8rem;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+}
+
+.result-features h4 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  color: #2c3e50;
+}
+
+.result-features ul {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.result-features li {
+  margin-bottom: 0.3rem;
+  color: #34495e;
+  font-size: 0.9rem;
+}
+
+.result-details {
+  margin: 0.8rem 0;
+  font-size: 0.9rem;
+}
+
+.detail-item {
+  margin-bottom: 0.3rem;
+  color: #7f8c8d;
+}
+
+.detail-label {
+  font-weight: bold;
+  color: #34495e;
+  margin-right: 0.3rem;
+}
+
+/* Parsed criteria display */
+.parsed-criteria {
+  margin: 1rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.parsed-criteria h3 {
+  margin-top: 0;
+  margin-bottom: 0.8rem;
+  font-size: 1.1rem;
+  color: #2c3e50;
+}
+
+.criteria-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.criteria-item {
+  padding: 0.5rem;
+  background-color: white;
+  border-radius: 4px;
+  border: 1px solid #eee;
+}
+
+.criteria-item strong {
+  color: #34495e;
+  margin-right: 0.3rem;
+}
+
+.raw-criteria-details {
+  margin-top: 1rem;
+  cursor: pointer;
+}
+
+.raw-criteria-details summary {
+  font-weight: bold;
+  color: #3498db;
+  padding: 0.5rem;
+  background-color: #ecf0f1;
+  border-radius: 4px;
+}
+
+.raw-criteria-content {
+  margin-top: 0.5rem;
+  padding: 0.8rem;
+  background-color: #f1f1f1;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-family: monospace;
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+  max-height: 200px;
+  overflow-y: auto;
 }
 
 .loading {
