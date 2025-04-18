@@ -1,113 +1,125 @@
 # SG Hangout Guide
 
-A React-based conversational widget that helps users find hangout spots in Singapore through natural language interaction, powered by OpenAI and OneMap API.
+SG Hangout Guide is a web application that helps users find the perfect hangout spots in Singapore based on natural language queries. It leverages the OneMap API for location data and OpenAI's GPT models to parse user queries, generate suggestions, check grammar, and rank recommended venues.
 
 ## Features
 
-- **Natural Language Input**: Users can type queries in natural language (e.g., "I want to go to a cafe in the east with friends")
-- **AI-Powered Query Parsing**: Uses OpenAI to understand and extract search criteria
-- **Progressive Prompt Suggestions**: Dynamically suggests missing information as users type
-- **OneMap API Integration**: Uses Singapore's OneMap API to find relevant venues
-- **Comprehensive Results**: Returns multiple matching venues with details and descriptions
-- **Intelligent Venue Selection**: Randomizes and filters results for diverse recommendations
-- **Responsive Design**: Works on both desktop and mobile devices
-- **React Frontend**: Modern component-based UI with React
-- **Express Backend**: Robust server with API proxying and error handling
+- Natural language search for hangout spots such as cafes, restaurants, parks, shopping malls, bars, museums, libraries, cinemas, and more.
+- Intelligent query parsing to extract search criteria like region, activity type, group size, and indoor/outdoor preference.
+- Real-time suggestions to help users refine their search queries.
+- Grammar checking and automatic correction of user queries.
+- Ranking of search results based on relevance to the query using OpenAI.
+- Proxying of OneMap API requests to avoid CORS issues.
+- Responsive React frontend with an interactive search interface.
 
-## Recent Updates
+## Cloud Computing and Query Processing
 
-- Improved OneMap API endpoint to use the latest `/common/elastic/search`
-- Enhanced search result generation with more diverse and randomized results
-- Added robust error handling for OpenAI response parsing
-- Improved logging and debugging capabilities
+The SG Hangout Guide leverages cloud computing services to process user queries efficiently and intelligently:
 
-## Prerequisites
+- **OpenAI API Integration:** The backend server uses OpenAI's GPT-4.1-mini model hosted in the cloud to parse natural language queries into structured search criteria. This allows the app to understand complex user inputs such as activity type, region, group size, and indoor/outdoor preferences.
 
-- Node.js (v14 or later)
-- npm (v6 or later)
-- OpenAI API Key
-- OneMap API Access (if required)
+- **Cloud-based Ranking and Suggestions:** OpenAI is also used to generate real-time suggestions for query refinement and to rank search results based on relevance, popularity, and location. This offloads heavy natural language processing and ranking computations to the cloud, ensuring fast and scalable responses.
 
-## Installation
+- **OneMap API for Location Data:** The app queries the OneMap API, a cloud-based geospatial service provided by Singapore's government, to retrieve venue data such as cafes, parks, and restaurants. The backend proxies these requests to avoid CORS issues and caches results to optimize performance.
 
-1. Clone the repository:
-   ```
-   git clone <repository-url>
-   cd sg-hangout-guide
-   ```
+- **Server as a Cloud Gateway:** The Express server acts as a gateway between the frontend and these cloud services, managing API keys securely, handling request throttling, caching, and error handling to provide a seamless user experience.
 
-2. Install dependencies:
-   ```
-   npm install
-   npm run client-install
-   ```
-
-3. Create a `.env` file in the root directory and add:
-   ```
-   OPENAI_API_KEY=your_openai_api_key_here
-   ```
-
-4. Start the application:
-   ```
-   npm run dev-full
-   ```
-
-5. Open your browser and navigate to:
-   ```
-   http://localhost:3000
-   ```
-
-## Usage
-
-1. Type your query in the input field (e.g., "Looking for a place to hang out")
-2. The widget will analyze your input and suggest missing information
-3. Click on suggestions to add them to your query or continue typing
-4. Once you've provided enough information, click "Search" or press Enter
-5. View the results showing matching hangout spots in Singapore
-
-## Example Queries
-
-- "I want to go to a cafe"
-- "Looking for outdoor activities in the west"
-- "Places to eat with a large group in Orchard"
-- "Indoor activities for two people in the east"
-
+This architecture allows the SG Hangout Guide to provide intelligent, context-aware hangout spot recommendations without requiring heavy local computation, leveraging cloud resources for scalability and advanced AI capabilities.
 ## Project Structure
 
-```
-sg-hangout-guide/
-├── client/                     # React client application
-│   ├── public/                 # Public assets
-│   │   ├── index.html          # HTML entry point
-│   │   └── manifest.json       # Web app manifest
-│   ├── src/                    # Source code
-│   │   ├── components/         # React components
-│   │   │   ├── HangoutGuide.js # Main widget component
-│   │   │   ├── Suggestions.js  # Suggestions component
-│   │   │   └── Results.js      # Results display component
-│   │   ├── services/           # Service modules
-│   │   │   └── api.js          # API service for OneMap
-│   │   ├── styles/             # CSS styles
-│   │   │   ├── App.css         # App-specific styles
-│   │   │   └── index.css       # Global styles
-│   │   ├── App.js              # Main App component
-│   │   └── index.js            # React entry point
-│   └── package.json            # Client dependencies
-├── server.js                   # Express server for API proxying
-├── package.json                # Server dependencies and scripts
-└── .env                        # Environment configuration
-```
+- `server.js`: Express backend server handling API requests, OpenAI integration, and serving the React frontend.
+- `client/`: React frontend application.
+  - `src/components/HangoutGuide.js`: Main component managing user input, fetching suggestions and results, and displaying them.
+  - `src/components/Suggestions.js`: Component to display query suggestions.
+  - `src/components/Results.js`: Component to display search results.
+  - `src/services/api.js`: API service module for frontend-backend communication.
+- `.env`: Environment variables including `OPENAI_API_KEY` and optional `PORT`.
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v14 or later recommended)
+- npm or yarn
+- OpenAI API key (sign up at [OpenAI](https://openai.com) to get an API key)
+
+### Installation
+
+1. Clone the repository:
+
+   ```bash
+   git clone <repository-url>
+   cd SG_hangout_guide
+   ```
+
+2. Install server dependencies:
+
+   ```bash
+   npm install
+   ```
+
+3. Install client dependencies:
+
+   ```bash
+   cd client
+   npm install
+   cd ..
+   ```
+
+4. Create a `.env` file in the `SG_hangout_guide` directory with the following content:
+
+   ```
+   OPENAI_API_KEY=your_openai_api_key_here
+   PORT=5000
+   ```
+
+### Running the Application
+
+1. Start the server (which also serves the React frontend):
+
+   ```bash
+   npm start
+   ```
+
+2. Open your browser and navigate to `http://localhost:5000`.
+
+3. Use the search input to type natural language queries like:
+
+   - "Find a cafe in Orchard for two"
+   - "Looking for a park with outdoor seating"
+   - "Best restaurants in Marina Bay for family"
+
+4. The app will provide suggestions to refine your query and display ranked hangout spots based on your input.
+
+## API Endpoints
+
+- `GET /api/onemap/search`: Proxy to OneMap search API.
+- `GET /api/onemap/revgeocode`: Proxy to OneMap reverse geocode API.
+- `POST /api/hangout/search`: Parses natural language query, searches for hangout spots, ranks results, and returns suggestions.
+- `POST /api/grammar/check`: Checks grammar of a query and returns corrections.
+- `POST /api/openai/chat`: Provides next word suggestions and grammar corrections (used internally).
 
 ## Technologies Used
 
-- React.js for the frontend UI components
-- OpenAI GPT for natural language processing
-- Express.js for the backend server
-- OneMap API for Singapore location data
-- Node.js runtime environment
-- HTML5, CSS3, JavaScript (ES6+)
+- Node.js and Express for backend server.
+- React for frontend UI.
+- OpenAI GPT-4.1-mini model for natural language processing.
+- OneMap API for Singapore location data.
+- Axios for HTTP requests.
+- Lodash debounce for input throttling.
 
-## Troubleshooting
+## Notes
+
+- The app uses caching to reduce redundant API calls to OneMap.
+- The backend enriches venue data with images and formatted addresses.
+- The app supports both development and production modes.
+- CORS is enabled on the server to allow frontend-backend communication.
+
+## License
+
+This project is licensed under the MIT License.
+
+---
 
 - Ensure your OpenAI API key is valid and has sufficient credits
 - Check console logs for detailed error messages
